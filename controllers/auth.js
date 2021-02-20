@@ -67,7 +67,7 @@ exports.login = (req, res) => {
     "SELECT * FROM `users` WHERE `username` = ? AND password = ?",
     [username, password],
     (err, results, fields) => {
-      if (results.length > 0) {
+      //if (results.length > 0) {
         // connection.query("SELECT `student` FROM `users` WHERE `username` = ?", [username], (err, results, fields) => {
         //     if (err){
         //         console.log("Error in query" + err)
@@ -89,6 +89,6 @@ exports.login = (req, res) => {
                     }
                 );
             }
-        }
+        //}
     );
 };
