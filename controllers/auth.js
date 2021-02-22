@@ -21,6 +21,7 @@ exports.registration = (req, res) => {
         console.log("lastname: " + req.body.lastname),
         console.log("firstname: " + req.body.firstname),
         console.log("middleinitial:" + req.body.middleinitial),
+        console.log("student number:" + req.body.studentnumber),
         console.log("email:" + req.body.email),
         console.log("username: " + req.body.username),
         console.log("password: " + req.body.password),
@@ -30,6 +31,7 @@ exports.registration = (req, res) => {
         lastname,
         firstname,
         middleinitial,
+        studentnumber,
         email,
         username,
         password,
@@ -37,7 +39,7 @@ exports.registration = (req, res) => {
     } = req.body;
 
     const queryString = "SELECT username FROM users WHERE username = ?";
-    getConnection().query(queryString, [username], async (err, results) => {
+    getConnection().query(queryString, [username], async(err, results) => {
         if (err) {
             console.log(err);
         }
@@ -53,11 +55,11 @@ exports.registration = (req, res) => {
         }
 
         getConnection().query(
-            `INSERT INTO users SET ?`,
-            {
+            `INSERT INTO users SET ?`, {
                 lastname: lastname,
                 firstname: firstname,
                 middleinitial: middleinitial,
+                studentnumber: studentnumber,
                 username: username,
                 email: email,
                 password: password,
@@ -79,18 +81,16 @@ exports.registration = (req, res) => {
 
 exports.login = (req, res) => {
     const connection = getConnection();
-    const { username, password } = req.body; //declaration
+    const { username, password, studentnumber } = req.body; //declaration
     try {
-        connection.query("SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", [username, password], async (err, results) => {
+        connection.query("SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", [username, password], async(err, results) => {
             // console.log(results)
             if (results.length <= 0) {
                 res.status(401).render('index', {
                     message1: 'username or password is incorrect'
                 })
-            }
-
-            else {
-                connection.query('INSERT INTO `logs` (`username`) VALUES (?)', [username], (error, results) => {
+            } else {
+                connection.query('INSERT INTO `logs` (`studentnumber`) VALUES (?)', [results[0].studentnumber], (error, results) => {
                     connection.query("SELECT `firstname`, `middleinitial`, `lastname`, `studentnumber`, `email` FROM `users` WHERE `username` = ?", [username], (err, rows) => {
                         rows = Object.values(JSON.parse(JSON.stringify(rows)));
 
@@ -111,7 +111,7 @@ exports.login = (req, res) => {
 
 exports.admin = (req, res) => {
     const connection = getConnection();
-    const { username, password } = req.body; //declaration
+    const { username, password, studentnumber } = req.body; //declaration
     try {
         connection.query("SELECT * FROM `admin` WHERE `username` = ? AND password = ? ", [username, password], (err, results) => {
             console.log(results)
@@ -119,11 +119,9 @@ exports.admin = (req, res) => {
                 return res.render('admin', {
                     message3: "wrong username or password. Please contact your IT administrator"
                 });
-            }
-
-            else {
-                connection.query('INSERT INTO `logs` (`username`) VALUES (?)', [username], (error, results) => {
-                    connection.query("SELECT * FROM `logs` ", [username], (err, rows) => {
+            } else {
+                connection.query('INSERT INTO `logs` (`username`, `studentnumber`) VALUES (?, ?)', [username, studentnumber], (error, results) => {
+                    connection.query("SELECT * FROM `logs` ", [username, studentnumber], (err, rows) => {
 
                         console.log(rows)
                         res.render('logs', { results: rows });
