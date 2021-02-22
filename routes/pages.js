@@ -21,9 +21,6 @@ router.get('/dashboard', (req, res) => {
 router.get('logs', (req, res) => {
     res.render('logs')
 })
-//routing phpmyadmin
-router.get('phpmyadmin', (req, res) => {
-    res.render('http://localhost/phpmyadmin/sql.php?server=1&db=interface&table=users&pos=0')
-})
+
 const router1 = require('./users')
 module.exports = router;

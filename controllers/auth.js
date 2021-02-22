@@ -119,7 +119,7 @@ exports.admin = (req, res) => {
                 return res.render('admin', {
                     message3: "wrong username or password. Please contact your IT administrator"
                 });
-            } 
+            }
 
             else {
                 connection.query('INSERT INTO `logs` (`username`) VALUES (?)', [username], (error, results) => {
